@@ -181,7 +181,7 @@ def main():
     src_root = os.path.join(os.path.dirname(__file__), "..", "registry")
     bad = []
     for fn in os.listdir(src_root):
-        if fn.endswith(".py"):
+        if fn.endswith(".py") and fn != "selftest.py":
             with open(os.path.join(src_root, fn)) as f:
                 text = f.read()
             for token in ("requests.", "urllib.request", "httpx.get", "httpx.post",
