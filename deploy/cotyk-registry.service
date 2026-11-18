@@ -1,0 +1,27 @@
+# systemd --user unit for the COTYK Bridge Registry (runs on deck).
+# Install (as deck user):
+#   mkdir -p ~/registry ~/.config/systemd/user
+#   cp deploy/cotyk-registry.service ~/.config/systemd/user/
+#   python3 -m venv ~/registry/venv && ~/registry/venv/bin/pip install -r requirements.txt
+#   cp -r registry ~/registry/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now cotyk-registry
+#
+# NOTE: set a real owner token before enabling:
+#   systemctl --user set-environment REGISTRY_OWNER_TOKEN=$(openssl rand -hex 32)
+# or persist it in the unit's Environment= line.
+
+[Unit]
+Description=COTYK Bridge Registry (federation P2 directory service)
+After=network-online.target
+
+[Service]
+ExecStart=%h/registry/venv/bin/python -m registry --host 0.0.0.0 --port 9400 --db %h/registry/data/registry.db
+WorkingDirectory=%h/registry
+Environment=REGISTRY_OWNER_TOKEN=change-me
+# REGISTRY_MEMBER_TOKEN=optional-member-token
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
